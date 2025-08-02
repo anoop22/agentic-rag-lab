@@ -24,13 +24,10 @@ if "OPENAI_API_KEY" not in os.environ:
     raise EnvironmentError("Set OPENAI_API_KEY in your shell before running.")
 
 # ---------------------------------------------------------------------
-# 1. Fetch and split documents
+# 1. Fetch and split documents (interactive)
 # ---------------------------------------------------------------------
-urls = [
-    "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/",
-    "https://lilianweng.github.io/posts/2024-07-07-hallucination/",
-    "https://lilianweng.github.io/posts/2024-04-12-diffusion-video/",
-]
+input_urls = input("Enter one or more URLs (comma-separated): ").strip()
+urls = [u.strip() for u in input_urls.split(",") if u.strip()]
 
 docs = [WebBaseLoader(u).load() for u in urls]
 docs_flat = [d for sub in docs for d in sub]
@@ -150,10 +147,10 @@ workflow.add_edge("rewrite_question", "generate_query_or_respond")
 graph = workflow.compile()
 
 # ---------------------------------------------------------------------
-# 6. Demo run
+# 6. Demo run (interactive)
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
-    user_question = "What does Lilian Weng say about types of reward hacking?"
+    user_question = input("Enter your question: ").strip()
     for chunk in graph.stream({"messages": [{"role": "user", "content": user_question}]}):
         for node, update in chunk.items():
             print(f"\n--- Update from node: {node} ---")
